@@ -1,5 +1,5 @@
 import { UseState } from './UseState';
-import { ClassState } from './ClassState';
+import { UseReducer } from './UseReducer';
 import './App.css';
 
 function App() {
@@ -8,8 +8,8 @@ function App() {
       <UseState
         name="UseState"
       />
-      <ClassState
-        name="ClassState"
+      <UseReducer
+        name="UseReducer"
       />
       <button 
       className='transition-colors absolute top-2 right-2 w-16 h-8 bg-slate-800 rounded-lg dark:bg-slate-300'
