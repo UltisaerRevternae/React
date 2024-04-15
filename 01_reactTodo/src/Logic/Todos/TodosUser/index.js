@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useCallback, useContext } from "react"
 import { SectionContext } from "../../../Context/section"
 import { TodosFiltered } from "./TodosFiltered"
 import { TodosInformation } from "./TodosInformation"
@@ -6,23 +6,34 @@ import { getUser } from "../../../Global/storage"
 import { TodosRenderCongratulations, TodosRenderItems, TodosStorageListener, TodosUserHeader } from "./TodosRender"
 import { Search } from "../../../Components/Input/Search"
 import { ItemsContainer } from "../../../Components/Items/ItemsContainer"
-import { ListenerSearchTodos } from "../../../Listener/searchTodos"
 
 const TodosUser = () => {
+  const [state, setState] = React.useState({
+    loading: true,
+    error: false,
+    searchValue: ''
+  })
+  
+  const setLoading = useCallback((value) => {
+    setState((prev) => ({ ...prev, loading: value }));
+  }, []);
+  
+  const setError = useCallback((value) => {
+    setState((prev) => ({ ...prev, error: value }));
+  }, []);
+  
+  const onSearch = (e) => setState({...state, searchValue: e.target.value})
 
-  const [searchValue, setSearchValue] = React.useState('')
-  const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState(false)
   const { todos, setTodos, todosFilter } = useContext(SectionContext)
 
   const dataTodosFiltered = TodosFiltered({
-    searchValue,
+    searchValue: state.searchValue,
+    loading : state.loading,
     setLoading,
     setError,
     todos,
     setTodos,
     todosFilter,
-    loading
   })
 
   const {
@@ -36,13 +47,11 @@ const TodosUser = () => {
   } = {
     ...TodosInformation({
       todos,
-      loading,
-      error,
+      loading: state.loading,
+      error: state.error,
       getUser: getUser()
     })
   }
-
-  const handleSearch = (e) => ListenerSearchTodos(e, setSearchValue);
 
   const SeccionPageTitleOpcions = {
     'ALL': 'Home',
@@ -52,21 +61,20 @@ const TodosUser = () => {
 
   const SeccionPageTitle = SeccionPageTitleOpcions[todosFilter] || 'Home';
 
-
   return (
     <>
       <div className="Container">
 
         <TodosUserHeader
-          onLoading={loading}
-          onError={error}
+          onLoading={state.loading}
+          onError={state.error}
           isCompleted={{ isTodosCompletedAll, nickName }}
           isPending={{ isTodosIncompleted, todosCompleted, todosTotal, SeccionPageTitle }}
         />
 
         <Search
-          accion={(e) => handleSearch(e)}
-          value={searchValue}
+          accion={onSearch}
+          value={state.searchValue}
         />
 
         <ItemsContainer>
@@ -75,9 +83,6 @@ const TodosUser = () => {
         </ItemsContainer>
 
         <TodosStorageListener setLoading = { setLoading }/>
-        {/* <TodosConfirmStorage 
-          setLoading = { setLoading }
-        /> */}
 
       </div >
     </>

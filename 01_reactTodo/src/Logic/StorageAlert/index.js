@@ -6,9 +6,7 @@ const withStorageListener = (WrappedComponent) => {
 
     useEffect(() => {
       const handleStorageChange = (e) => {
-        if (e.key === 'todos') {
-          setIsChangeStorage(true)
-        }
+        setIsChangeStorage(true)
       }
       window.addEventListener("storage", handleStorageChange);
     }, [])
